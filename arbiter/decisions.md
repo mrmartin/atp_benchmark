@@ -63,3 +63,27 @@ ADR-style log. Each entry has a number, date, status, decision, and the reasons 
 **Decision.** `.gitignore` was written before `git init`'s first stage. Line 1 is a comment, line 2 is `.env`. A `pre-push` hook running `arbiter/scripts/check_no_secrets.sh` greps for known key prefixes (`sk-`, `sk-or-`, `sk-ant-`, `hf_`, `gh[pousr]_`) and rejects pushes that would leak.
 
 **Why.** `.env` already exists in the working dir and contains `OPENROUTER_API_KEY`. The user explicitly asked for "use it but not divulge it." Two layers of defense.
+
+## ADR-008 — 2026-05-07 — Lean toolchain bumped to v4.27.0 (matches PutnamBench)
+
+**Status:** accepted (during step 4 → step 5).
+
+**Decision.** Bump `harness/lean-project/lean-toolchain` from `v4.25.1` to `v4.27.0` and the mathlib pin from `77b45269e0…` (tag v4.25.1) to `a3a10db0e9d6…` (tag v4.27.0).
+
+**Why.** The pinned PutnamBench main commit (`77ea5a04`, 2026-04-20) targets `leanprover/lean4:v4.27.0` and mathlib `v4.27.0`. Pinning the harness to those exact versions lets us copy PutnamBench's statement files in unmodified — no porting, no paraphrasing, no risk of accidental semantic drift between source and registered statement. The earlier v4.25.1 pin was chosen before I'd surveyed PutnamBench; the cost of the bump was one extra `lake exe cache get` (~7 GB on NVMe) and was paid before any pre-registration commit.
+
+## ADR-009 — 2026-05-07 — Holdout drawn from PutnamBench (Putnam 2024 + 2025), not compfiles
+
+**Status:** accepted (during step 5).
+
+**Decision.** All 4 holdout problems come from PutnamBench's own Putnam 2024 and 2025 entries, not from `dwrensha/compfiles` or `google-deepmind/formal-conjectures`.
+
+**Why.** PutnamBench at the pinned commit already includes both Putnam 2024 (December 2024) and Putnam 2025 (December 2025) formalized in Lean 4 + mathlib4 by the official authors. Using a single source means a single mathlib pin and zero porting work; the contamination-free property is preserved because it derives from competition date relative to training cutoffs, not from the formalization being external. Caveat documented in `selection_criteria.md`: Claude Opus 4.7's January-2026 cutoff sits just after Putnam 2025's December-2025 date, so contamination cannot be ruled out for Claude on the holdout — partial protection for two of three systems, full for none.
+
+## ADR-010 — 2026-05-07 — Combinatorics holdout swap: 2025_a3 → 2025_a5
+
+**Status:** accepted (during step 5).
+
+**Decision.** Replace `putnam_2025_a3` with `putnam_2025_a5` as the combinatorics holdout problem.
+
+**Why.** The PutnamBench formalization of `putnam_2025_a3` uses `List.Chain` with its pre-v4.27.0 argument list. mathlib `a3a10db` deprecates that constant in favor of `List.IsChain` with a *different type* (one fewer argument). The statement still compiles but its semantic intent now relies on a deprecated API mid-flux; reviewers could reasonably question whether the registered statement still says what its informal English claims. `putnam_2025_a5` is the next-cleanest 2025 combinatorics problem (11 lines, no deprecation warnings) and is registered instead. Documented as a rejection in `problems/selection_criteria.md`.

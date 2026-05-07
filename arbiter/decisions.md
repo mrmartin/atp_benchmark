@@ -54,7 +54,7 @@ ADR-style log. Each entry has a number, date, status, decision, and the reasons 
 
 **Why.** Root partition is at 91% (45 GB free); mathlib build cache alone is several GB and Goedel-V2 weights are ~64 GB.
 
-**Caveat.** Docker `data-root` is *not* yet relocated; the recommendation to move it to `/mnt/nvme2/docker` requires explicit user approval and host config change. Flagged in plan step 3.
+**Caveat.** Docker `data-root` is *not* yet relocated; the recommendation to move it to `/mnt/nvme2/docker` requires explicit user approval and host config change. Documented in `arbiter/host_setup.md` for the user to run with `sudo`.
 
 ## ADR-007 — 2026-05-07 — `.env` ignored at line 2 of `.gitignore`; pre-push secret scan as safety net
 

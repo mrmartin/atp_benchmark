@@ -7,7 +7,8 @@
 set -euo pipefail
 problem_id=${1:?problem_id required}
 sample_idx=${2:?sample_idx required}
-exec python3 /workspace/harness/lib/runner.py \
+cd /workspace
+exec python3 -m harness.lib.runner \
     --system claude-code \
     --problem "$problem_id" \
     --sample-idx "$sample_idx"

@@ -26,3 +26,26 @@ A running log of arbiter actions. Newest at the top.
   - `atp-goedel-v2:latest` (5.51 GB): + torch 2.6.0+cpu + transformers 4.46.0 + accelerate + Goedel-Prover-V2 cloned at commit `2e9036e1`. CUDA disabled by design.
   - Smoke checks: `claude --version`, `opencode --version`, `python -c "import torch, transformers"`, `lean --version`, `lake build AtpHarness` (3076 jobs OK from /workspace via bind-mount).
 - Per-system READMEs, `prompt.txt`, `skill.md` (Claude Code), `opencode.config.json`, and `run.sh` stubs written. Runner body in step 8.
+
+---
+
+## Pause point — 2026-05-07, end of session
+
+**Completed:** steps 1–7 (and step 10) of the plan. Pre-registration tagged `preregistration-v1` at commit `bd1cc45`; harness sealed at commit `bcd50a6`. All on `main` at `git@github.com:mrmartin/atp_benchmark.git`.
+
+**Open tasks (resume here):**
+- Step 8 — per-system runners (`harness/lib/runner.py` + `harness/lib/budget.py` + `harness/lib/grader.py`; `systems/goedel-v2/inference.py`).
+- Step 9 — analysis notebooks (`analysis/notebooks/01..05.ipynb`).
+- Step 11 — final 6-test verification + `tag preregistration-final`.
+
+**Background state worth noting on resume:**
+- `harness/.venv` is provisioned on the host (lean-interact 0.11.2, mcp 1.27.0, atp-mcp-lean editable).
+- 7.3 GB mathlib build cache at `/mnt/nvme2/atp_runs/lean-build`. Lake project at `harness/lean-project` builds end-to-end.
+- All four Docker images live at `/mnt/nvme2/docker` (data-root relocated): `atp-harness`, `atp-claude-code`, `atp-deepseek-v4pro`, `atp-goedel-v2`. Re-pull or rebuild not needed unless their Dockerfiles change.
+- Goedel-Prover-V2 32B bf16 weights are **not yet downloaded**. ~64 GB. Should land in `/mnt/nvme2/atp_runs/goedel-v2/hf-cache/` on first inference run.
+- No residual background processes (only `dockerd` is up, which is correct).
+
+**To resume:**
+1. `cd /home/martin/ATP_agent_Putnam_experiment && git pull --tags` (already in sync, but doesn't hurt).
+2. Read `arbiter/progress.md` (this file) and `arbiter/decisions.md` (ADR-001 through ADR-010).
+3. Pick up at step 8: write `harness/lib/runner.py` and the per-system runner adapters.

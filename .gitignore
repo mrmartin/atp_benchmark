@@ -1,0 +1,50 @@
+# Secrets — must come first, before anything else
+.env
+.env.local
+*.secret
+**/credentials.json
+
+# Lean / Lake build artifacts
+.lake/
+lake-packages/
+build/
+*.olean
+*.ilean
+*.trace
+
+# Python
+.venv/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Model weights (huge, on /mnt/nvme2)
+*.safetensors
+*.gguf
+*.bin
+*.pt
+
+# Run outputs (live on /mnt/nvme2 via symlinks; the symlink target's contents are not committed)
+runs/.keep_target_unmounted
+results/raw-large/
+*.log
+
+# OS / editor
+.DS_Store
+Thumbs.db
+*.swp
+*~
+.idea/
+.vscode/
+
+# Misc
+node_modules/
+*.tar
+*.tar.gz

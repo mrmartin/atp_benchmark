@@ -1,0 +1,55 @@
+# docker compose -f harness/docker-compose.yml build
+# docker compose -f harness/docker-compose.yml run --rm <service>
+#
+# All services bind-mount the repo at /workspace and /mnt/nvme2/atp_runs/ at
+# the same absolute path inside the container so the .lake symlink resolves.
+
+services:
+  harness:
+    build:
+      context: ..
+      dockerfile: harness/Dockerfile
+    image: atp-harness:latest
+    volumes:
+      - ..:/workspace:rw
+      - /mnt/nvme2/atp_runs:/mnt/nvme2/atp_runs:rw
+    working_dir: /workspace
+
+  claude-code:
+    build:
+      context: ..
+      dockerfile: systems/claude-code/Dockerfile
+    image: atp-claude-code:latest
+    depends_on: [harness]
+    volumes:
+      - ..:/workspace:rw
+      - /mnt/nvme2/atp_runs:/mnt/nvme2/atp_runs:rw
+      # Subscription auth: bind-mount the host's Claude Code session.
+      - ${HOME}/.claude:/root/.claude:rw
+      - ${HOME}/.claude.json:/root/.claude.json:rw
+    working_dir: /workspace
+
+  deepseek-v4pro:
+    build:
+      context: ..
+      dockerfile: systems/deepseek-v4pro/Dockerfile
+    image: atp-deepseek-v4pro:latest
+    depends_on: [harness]
+    env_file: ../.env  # OPENROUTER_API_KEY, OPENROUTER_BASE_URL
+    volumes:
+      - ..:/workspace:rw
+      - /mnt/nvme2/atp_runs:/mnt/nvme2/atp_runs:rw
+    working_dir: /workspace
+
+  goedel-v2:
+    build:
+      context: ..
+      dockerfile: systems/goedel-v2/Dockerfile
+    image: atp-goedel-v2:latest
+    depends_on: [harness]
+    volumes:
+      - ..:/workspace:rw
+      - /mnt/nvme2/atp_runs:/mnt/nvme2/atp_runs:rw
+    working_dir: /workspace
+    # 32B bf16 ≈ 64 GB; leave headroom for activations + KV cache.
+    mem_limit: 96g

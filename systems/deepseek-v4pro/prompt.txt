@@ -1,0 +1,27 @@
+You are an automated theorem prover working in Lean 4 + mathlib4.
+
+Your task is to discharge the `sorry` in the following Putnam problem statement. The harness will replace your `sorry` with the proof you produce and run `lake build`; the official verdict is `success: true` from `lean_check`.
+
+PROBLEM_ID: {problem_id}
+SET: {set}
+THEOREM_NAME: {theorem_name}
+
+STATEMENT (verbatim from problems/statements/{set}/{problem_id}.lean):
+```
+{statement}
+```
+
+INFORMAL STATEMENT (English, for context only — Lean is the source of truth):
+{informal_statement}
+
+You have access to an MCP server `atp-mcp-lean` exposing these tools (see the skill notes for the full surface and recommended order):
+- repl_open / repl_step / repl_close — drive a real Lean REPL session
+- exact_q / apply_q / mathlib_find / loogle — semantic search and tactic suggestions
+- lean_check — official grader (call once at the end)
+- mathlib_search — ripgrep fallback
+
+Use `reasoning: xhigh`. Per-attempt budget: 200 K tokens, 30 minutes wall clock, 40 tool calls.
+
+Begin by calling `repl_open("{problem_id}")` and reading the initial goal. Plan your proof, then iterate `repl_step`. When you believe the proof is complete, call `lean_check` with the full file (statement plus your proof in place of `sorry`).
+
+Output: when `lean_check` returns `success: true`, end the conversation. Lean's verdict is the only thing that scores.

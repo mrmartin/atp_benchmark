@@ -18,3 +18,11 @@ A running log of arbiter actions. Newest at the top.
 - `problems/registry.json` (16 entries with sha256, area, year, source commit, statement_lines) and `problems/selection_criteria.md` (filters, stratification, rejection log) written. Pre-registration ready to commit + tag.
 - Pre-registration committed and tagged `preregistration-v1` at `bd1cc45`.
 - Step 6 — MCP Lean server: `harness/.venv` provisioned with `lean-interact 0.11.2` and `mcp 1.27.0`. Package at `harness/mcp-lean-server/` (editable installed). Implements `repl_open / repl_step / repl_close / loogle / exact_q / apply_q / mathlib_find / lean_check / mathlib_search` (last is documented fallback). Real REPL backed by `LocalProject(harness/lean-project)`; mathlib preloaded once per process and reused across sessions via env snapshots. All 8 smoke tests in `harness/mcp-lean-server/tests/test_smoke.py` pass against the pinned mathlib.
+- Docker `data-root` relocated to `/mnt/nvme2/docker` by user (per `arbiter/host_setup.md`). Confirmed via `docker info` before image builds.
+- Step 7 — Docker harness sealed: built four images on /mnt/nvme2/docker.
+  - `atp-harness:latest` (4.13 GB / 915 MB compressed): python:3.12-slim + ripgrep + git + elan with Lean v4.27.0 toolchain pre-installed + the `atp-mcp-lean` MCP server.
+  - `atp-claude-code:latest` (4.9 GB): + Node 20 + `@anthropic-ai/claude-code` v2.1.132. Subscription auth works via bind-mounted `~/.claude/` and `~/.claude.json`.
+  - `atp-deepseek-v4pro:latest` (5.76 GB): + Node 20 + `opencode-ai@1.14.24`. `.env` env_file injects `OPENROUTER_API_KEY` correctly.
+  - `atp-goedel-v2:latest` (5.51 GB): + torch 2.6.0+cpu + transformers 4.46.0 + accelerate + Goedel-Prover-V2 cloned at commit `2e9036e1`. CUDA disabled by design.
+  - Smoke checks: `claude --version`, `opencode --version`, `python -c "import torch, transformers"`, `lean --version`, `lake build AtpHarness` (3076 jobs OK from /workspace via bind-mount).
+- Per-system READMEs, `prompt.txt`, `skill.md` (Claude Code), `opencode.config.json`, and `run.sh` stubs written. Runner body in step 8.

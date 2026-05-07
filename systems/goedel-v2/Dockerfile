@@ -3,6 +3,7 @@
 
 FROM atp-harness:latest
 
+USER root
 # Torch CPU build (no CUDA needed)
 RUN pip install --index-url https://download.pytorch.org/whl/cpu \
         torch==2.6.0 \
@@ -17,10 +18,12 @@ RUN pip install --index-url https://download.pytorch.org/whl/cpu \
 ARG GOEDEL_COMMIT=2e9036e118464aa96a8bebaf9f5b9d091aa3585c
 RUN git clone https://github.com/Goedel-LM/Goedel-Prover-V2.git /opt/goedel-prover-v2 \
     && cd /opt/goedel-prover-v2 \
-    && git checkout ${GOEDEL_COMMIT}
+    && git checkout ${GOEDEL_COMMIT} \
+    && chown -R agent:agent /opt/goedel-prover-v2
 
 ENV GOEDEL_HOME=/opt/goedel-prover-v2 \
     HF_HOME=/mnt/nvme2/atp_runs/goedel-v2/hf-cache
 
+USER agent
 WORKDIR /workspace
 CMD ["bash"]

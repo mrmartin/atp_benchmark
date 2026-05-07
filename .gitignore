@@ -13,6 +13,10 @@ build/
 *.ilean
 *.trace
 
+# Grader / runner scratch dirs (regenerated per attempt; no need to commit)
+harness/lean-project/AtpHarness/_grader/
+harness/lean-project/AtpHarness/_sandbox/
+
 # Python
 .venv/
 venv/

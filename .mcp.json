@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "atp-mcp-lean": {
+      "command": "atp-mcp-lean",
+      "args": [],
+      "env": {}
+    }
+  }
+}

@@ -5,6 +5,7 @@
 **/credentials.json
 
 # Lean / Lake build artifacts
+.lake
 .lake/
 lake-packages/
 build/

@@ -1,0 +1,23 @@
+{
+  "_comment": "USD per million tokens. Update before running the cost notebook. Claude Code via subscription has a non-USD price (plan-quota tokens); reported separately.",
+  "claude-code": {
+    "billing": "subscription",
+    "input_per_mtok_usd": null,
+    "output_per_mtok_usd": null,
+    "note": "Reported in tokens-per-success only; no USD figure for the subscription path."
+  },
+  "deepseek-v4pro": {
+    "billing": "openrouter",
+    "model_slug": "deepseek/deepseek-v4-pro",
+    "input_per_mtok_usd": null,
+    "output_per_mtok_usd": null,
+    "reasoning_per_mtok_usd": null,
+    "note": "Fill from the OpenRouter pricing page at experiment time. reasoning: xhigh is billed under reasoning tokens."
+  },
+  "goedel-v2": {
+    "billing": "self-hosted",
+    "input_per_mtok_usd": 0.0,
+    "output_per_mtok_usd": 0.0,
+    "note": "Local CPU inference; cost is electricity. Optional: estimate $/run from CPU TDP × wallclock × $/kWh."
+  }
+}

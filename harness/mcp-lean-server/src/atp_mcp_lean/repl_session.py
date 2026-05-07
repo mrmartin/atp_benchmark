@@ -35,6 +35,16 @@ REPO = Path(__file__).resolve().parents[4]
 LEAN_PROJECT = REPO / "harness" / "lean-project"
 PROBLEMS_DIR = REPO / "problems" / "statements"
 
+# Where lean-interact caches its REPL build. Default to a writable location on
+# /mnt/nvme2 (bind-mounted) so the non-root agent user inside the container
+# can write here. Override via ATP_MCP_LEAN_CACHE_DIR if needed.
+DEFAULT_CACHE_DIR = Path(
+    os.environ.get(
+        "ATP_MCP_LEAN_CACHE_DIR",
+        "/mnt/nvme2/atp_runs/lean-interact-cache",
+    )
+)
+
 
 def _problem_path(problem_id: str) -> Path:
     """Resolve a registered problem ID to its statement file."""
@@ -92,8 +102,10 @@ class ReplPool:
     def _ensure(self) -> LeanServer:
         with self._lock:
             if self._server is None:
+                DEFAULT_CACHE_DIR.mkdir(parents=True, exist_ok=True)
                 config = LeanREPLConfig(
                     project=LocalProject(directory=str(LEAN_PROJECT)),
+                    cache_dir=DEFAULT_CACHE_DIR,
                     verbose=False,
                 )
                 self._server = LeanServer(config)

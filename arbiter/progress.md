@@ -29,6 +29,13 @@ A running log of arbiter actions. Newest at the top.
 
 ---
 
+## Continuation — 2026-05-07 afternoon
+
+- Step 8 — runner scaffolding committed at `cd9d30d`: `harness/lib/{runner,grader,budget}.py`, per-system adapters under `harness/lib/runners/`, `systems/goedel-v2/inference.py`, `.mcp.json`. Imports clean from the host venv.
+- During step 8 first attempt: parallel rebuilds filled `/` to 96 % and crashed the session. Root cause traced to the **system containerd snapshotter** (separate from Docker's `data-root`) keeping rootfs at `/var/lib/containerd`. ADR-011 + `arbiter/host_setup.md §1b` document the fix; user applied it (set `root = /mnt/nvme2/containerd` in `/etc/containerd/config.toml`, restarted both daemons).
+- Dockerfile follow-ups committed: non-root `agent` user (UID 1000) so bind-mount writes don't end up root-owned; `lean-interact` import-time cache dir made world-writable at image build (the actual REPL cache redirected to `/mnt/nvme2/atp_runs/lean-interact-cache` via `ATP_MCP_LEAN_CACHE_DIR`).
+- Re-built four images post-relocation in parallel; `/` stayed at 39 GB free, `/mnt/nvme2` grew by 6 GB. All 8 MCP smoke tests pass **inside the harness Docker container**, confirming the runtime path the experiment actually uses.
+
 ## Pause point — 2026-05-07, end of session
 
 **Completed:** steps 1–7 (and step 10) of the plan. Pre-registration tagged `preregistration-v1` at commit `bd1cc45`; harness sealed at commit `bcd50a6`. All on `main` at `git@github.com:mrmartin/atp_benchmark.git`.

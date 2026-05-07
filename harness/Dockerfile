@@ -29,7 +29,13 @@ RUN groupadd -g ${HOST_GID} agent || true \
 
 # Pre-install the MCP Lean server (lean-interact + Anthropic MCP SDK).
 COPY harness/mcp-lean-server /opt/mcp-lean-server
-RUN pip install /opt/mcp-lean-server
+RUN pip install /opt/mcp-lean-server \
+    # lean-interact's utils.py creates DEFAULT_CACHE_DIR at IMPORT time inside
+    # its package install. Make that path writable so the non-root agent user
+    # can import it. The actual REPL cache lives elsewhere (see repl_session.py
+    # ATP_MCP_LEAN_CACHE_DIR override on /mnt/nvme2).
+    && python3 -c "from lean_interact.utils import DEFAULT_CACHE_DIR; import os; os.makedirs(DEFAULT_CACHE_DIR, exist_ok=True)" \
+    && chmod -R a+rwX $(python3 -c "from lean_interact.utils import DEFAULT_CACHE_DIR; print(DEFAULT_CACHE_DIR)")
 
 # elan + Lean toolchain installed as the agent user so its toolchain dir is
 # under /home/agent/.elan and lean-interact's REPL cache stays writable.

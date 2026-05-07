@@ -80,6 +80,16 @@ ADR-style log. Each entry has a number, date, status, decision, and the reasons 
 
 **Why.** PutnamBench at the pinned commit already includes both Putnam 2024 (December 2024) and Putnam 2025 (December 2025) formalized in Lean 4 + mathlib4 by the official authors. Using a single source means a single mathlib pin and zero porting work; the contamination-free property is preserved because it derives from competition date relative to training cutoffs, not from the formalization being external. Caveat documented in `selection_criteria.md`: Claude Opus 4.7's January-2026 cutoff sits just after Putnam 2025's December-2025 date, so contamination cannot be ruled out for Claude on the holdout — partial protection for two of three systems, full for none.
 
+## ADR-011 — 2026-05-07 — Containerd snapshotter root must be on /mnt/nvme2
+
+**Status:** accepted; remediation pending user sudo (`arbiter/host_setup.md` §1b).
+
+**Decision.** Both Docker's `data-root` AND the system containerd's `root` must live on `/mnt/nvme2`. Setting only `data-root` is insufficient — image *layers* go there, but the **containerd snapshotter** still unpacks rootfs at `/var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/` during builds.
+
+**Why.** During step 8 a parallel rebuild of three system images filled `/` to 96 % even though `data-root` was on /mnt/nvme2; the system containerd had accumulated ~37 GB of snapshot data on root. The session crashed; the user manually pruned and asked me to fix the cause.
+
+**How to apply.** Updated `arbiter/host_setup.md` with the containerd relocation procedure (edits `/etc/containerd/config.toml`, sets `root = "/mnt/nvme2/containerd"`, restarts both daemons). Until applied, do NOT run parallel image builds; build sequentially and `docker buildx prune -f` between each.
+
 ## ADR-010 — 2026-05-07 — Combinatorics holdout swap: 2025_a3 → 2025_a5
 
 **Status:** accepted (during step 5).

@@ -36,7 +36,11 @@ A running log of arbiter actions. Newest at the top.
 - Dockerfile follow-ups committed: non-root `agent` user (UID 1000) so bind-mount writes don't end up root-owned; `lean-interact` import-time cache dir made world-writable at image build (the actual REPL cache redirected to `/mnt/nvme2/atp_runs/lean-interact-cache` via `ATP_MCP_LEAN_CACHE_DIR`).
 - Re-built four images post-relocation in parallel; `/` stayed at 39 GB free, `/mnt/nvme2` grew by 6 GB. All 8 MCP smoke tests pass **inside the harness Docker container**, confirming the runtime path the experiment actually uses.
 
-## Pause point — 2026-05-07, end of session
+- Step 9 — analysis scaffold committed at `7c36237`. `analysis/_lib.py` provides shared load/compute (pass@k unbiased estimator + bootstrap CI by problem-resampling, heatmap matrix, exact McNemar). Five notebooks under `analysis/notebooks/` are thin wrappers regenerable from `analysis/_build_notebooks.py`. Verified the lib runs cleanly against an empty `results/raw/` (returns zero-fill structures, no crash).
+- Step 11 — final verification: `arbiter/scripts/verify_harness.sh` runs 11 explicit checks (repo round-trip + .env-not-tracked + secret scan, in-container `lake build` + 8 MCP smoke tests, four version checks across the three system images, root-disk budget). **11 pass, 0 fail.** Test 5 (end-to-end attempt on a non-registered warmup problem) is explicitly skipped — it would consume API credits and trigger the ~64 GB Goedel-V2 weight download; deferred to the first real run. Full log archived at `arbiter/verify_harness_log.txt`.
+- Tagged `harness-ready` to mark this milestone (the experiment can now be RUN; preregistration-v1 marks the immutable problem freeze).
+
+## Harness-ready — 2026-05-07
 
 **Completed:** steps 1–7 (and step 10) of the plan. Pre-registration tagged `preregistration-v1` at commit `bd1cc45`; harness sealed at commit `bcd50a6`. All on `main` at `git@github.com:mrmartin/atp_benchmark.git`.
 

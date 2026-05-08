@@ -1,0 +1,20 @@
+{
+  "system": "deepseek-v4pro",
+  "problem_id": "putnam_2022_a3",
+  "set": "main",
+  "sample_idx": 0,
+  "seed": 0,
+  "started_at": 1778248858.1461313,
+  "tokens_in": 0,
+  "tokens_out": 0,
+  "tool_calls": 35,
+  "proof_text": "",
+  "transcript_path": "/mnt/nvme2/atp_runs/transcripts/deepseek-v4pro/putnam_2022_a3/0.jsonl",
+  "exit_code": 124,
+  "verdict": false,
+  "lake": {
+    "success": false,
+    "stderr_tail": "(no proof produced)"
+  },
+  "wall_seconds": 1800.09
+}

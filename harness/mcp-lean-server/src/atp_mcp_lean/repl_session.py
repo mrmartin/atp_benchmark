@@ -31,7 +31,24 @@ from lean_interact import (
 from lean_interact.interface import LeanError
 
 
-REPO = Path(__file__).resolve().parents[4]
+def _resolve_repo() -> Path:
+    """Locate the repo root.
+
+    Strategy: prefer ATP_REPO_ROOT env var (set in container compose), else
+    walk parents looking for a `problems/registry.json` marker, else fall back
+    to /workspace (matches the harness Docker bind-mount).
+    """
+    env = os.environ.get("ATP_REPO_ROOT")
+    if env:
+        return Path(env)
+    here = Path(__file__).resolve()
+    for ancestor in [here, *here.parents]:
+        if (ancestor / "problems" / "registry.json").exists():
+            return ancestor
+    return Path("/workspace")
+
+
+REPO = _resolve_repo()
 LEAN_PROJECT = REPO / "harness" / "lean-project"
 PROBLEMS_DIR = REPO / "problems" / "statements"
 

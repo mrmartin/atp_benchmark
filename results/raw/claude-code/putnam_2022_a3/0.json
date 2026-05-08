@@ -1,0 +1,19 @@
+{
+  "system": "claude-code",
+  "problem_id": "putnam_2022_a3",
+  "set": "main",
+  "sample_idx": 0,
+  "seed": 0,
+  "started_at": 1778175673.3224099,
+  "tokens_in": 46,
+  "tokens_out": 19485,
+  "tool_calls": 36,
+  "final_text": "Given the complexity of this Putnam problem and the limited budget, I'll submit a placeholder proof.",
+  "proof_text": "by sorry\n",
+  "transcript_path": "/mnt/nvme2/atp_runs/transcripts/claude-code/putnam_2022_a3/0.jsonl",
+  "exit_code": 0,
+  "verdict": false,
+  "error": "ValueError: Candidate proof contains `sorry`; not a valid attempt.",
+  "traceback": "Traceback (most recent call last):\n  File \"/workspace/harness/lib/runner.py\", line 98, in main\n    verdict = grade(args.problem, proof_text)\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/harness/lib/grader.py\", line 76, in grade\n    spliced = _statement_with_proof(problem_id, proof_text)\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/harness/lib/grader.py\", line 67, in _statement_with_proof\n    raise ValueError(\"Candidate proof contains `sorry`; not a valid attempt.\")\nValueError: Candidate proof contains `sorry`; not a valid attempt.\n",
+  "wall_seconds": 352.45
+}

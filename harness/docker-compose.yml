@@ -21,12 +21,17 @@ services:
       dockerfile: systems/claude-code/Dockerfile
     image: atp-claude-code:latest
     depends_on: [harness]
+    user: "${UID:-1000}:${GID:-1000}"
     volumes:
       - ..:/workspace:rw
       - /mnt/nvme2/atp_runs:/mnt/nvme2/atp_runs:rw
-      # Subscription auth: bind-mount the host's Claude Code session.
-      - ${HOME}/.claude:/root/.claude:rw
-      - ${HOME}/.claude.json:/root/.claude.json:rw
+      # Subscription auth: bind-mount the host's Claude Code session
+      # into the container's `agent` home (uid 1000).
+      - ${HOME}/.claude:/home/agent/.claude:rw
+      - ${HOME}/.claude.json:/home/agent/.claude.json:rw
+    environment:
+      HOME: /home/agent
+      ATP_REPO_ROOT: /workspace
     working_dir: /workspace
 
   deepseek-v4pro:
@@ -35,10 +40,14 @@ services:
       dockerfile: systems/deepseek-v4pro/Dockerfile
     image: atp-deepseek-v4pro:latest
     depends_on: [harness]
+    user: "${UID:-1000}:${GID:-1000}"
     env_file: ../.env  # OPENROUTER_API_KEY, OPENROUTER_BASE_URL
     volumes:
       - ..:/workspace:rw
       - /mnt/nvme2/atp_runs:/mnt/nvme2/atp_runs:rw
+    environment:
+      HOME: /home/agent
+      ATP_REPO_ROOT: /workspace
     working_dir: /workspace
 
   goedel-v2:
@@ -47,9 +56,13 @@ services:
       dockerfile: systems/goedel-v2/Dockerfile
     image: atp-goedel-v2:latest
     depends_on: [harness]
+    user: "${UID:-1000}:${GID:-1000}"
     volumes:
       - ..:/workspace:rw
       - /mnt/nvme2/atp_runs:/mnt/nvme2/atp_runs:rw
+    environment:
+      HOME: /home/agent
+      ATP_REPO_ROOT: /workspace
     working_dir: /workspace
     # 32B bf16 ≈ 64 GB; leave headroom for activations + KV cache.
     mem_limit: 96g

@@ -1,0 +1,17 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "model": "openrouter/deepseek/deepseek-v4-pro",
+  "provider": {
+    "openrouter": {
+      "options": {
+        "apiKey": "{env:OPENROUTER_API_KEY}"
+      }
+    }
+  },
+  "mcp": {
+    "atp-mcp-lean": {
+      "type": "local",
+      "command": ["atp-mcp-lean"]
+    }
+  }
+}

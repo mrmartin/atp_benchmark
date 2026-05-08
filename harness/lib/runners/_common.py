@@ -34,3 +34,40 @@ def write_jsonl(path: Path, events: list[dict]) -> None:
     with path.open("w") as f:
         for e in events:
             f.write(json.dumps(e, ensure_ascii=False) + "\n")
+
+
+def stream_subprocess(
+    cmd: list[str],
+    *,
+    cwd: str,
+    env: dict | None,
+    transcript_path: Path,
+    wall_seconds: int,
+) -> tuple[int, list[dict]]:
+    """Run cmd, stream stdout line-by-line to transcript_path (jsonl when possible).
+
+    Enforces a hard wall-clock cap via the GNU `timeout` command; if cmd exits
+    cleanly within budget, returns (exit_code, parsed_events). On timeout,
+    `timeout` sends SIGTERM (then SIGKILL after 10 s) and we surface the
+    partial output as-is.
+    """
+    import subprocess
+    transcript_path.parent.mkdir(parents=True, exist_ok=True)
+    wrapped = ["timeout", "--kill-after=10", f"{wall_seconds}s", *cmd]
+    events: list[dict] = []
+    with transcript_path.open("w", buffering=1) as tf, subprocess.Popen(
+        wrapped, cwd=cwd, env=env,
+        stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True,
+    ) as proc:
+        assert proc.stdout is not None
+        for line in proc.stdout:
+            line = line.rstrip("\n")
+            if not line:
+                continue
+            tf.write(line + "\n")
+            try:
+                events.append(json.loads(line))
+            except json.JSONDecodeError:
+                events.append({"raw": line})
+        proc.wait()
+        return proc.returncode, events
